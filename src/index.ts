@@ -6,6 +6,8 @@ import { readConfig } from "~/config";
 import { isAppRouterAlias, isContext, isMiddleware, isRouter } from "~/guard";
 import { getAllTransformers, pruneRouter, redefine } from "~/transformer";
 
+const isTestFile = (f: string) => f.includes("test") || f.includes("spec");
+
 const main = async () => {
   const cfg = await readConfig("xtrpc.config.json");
 
@@ -14,7 +16,18 @@ const main = async () => {
     compilerOptions: { outDir: "dist", declaration: true, noEmit: false },
   });
 
-  const srcFiles = srcProj.getSourceFiles();
+  const srcFiles = srcProj.getSourceFiles().filter((f) => {
+    const filePath = f.getDirectoryPath() + "/" + f.getBaseName();
+    if (isTestFile(filePath)) {
+      return false;
+    }
+
+    if (cfg.srcFolders.length === 0) {
+      return true;
+    }
+
+    return cfg.srcFolders.some((folder) => filePath.includes(folder));
+  });
 
   const transformers = getAllTransformers(srcFiles, [
     [isContext, redefine("any")],

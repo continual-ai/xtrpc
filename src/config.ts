@@ -3,6 +3,7 @@ import { z } from "zod";
 
 const Config = z.object({
   srcProject: z.string().optional().default("."),
+  srcFolders: z.array(z.string()).optional().default([]),
   dstProject: z.string().optional().default("."),
   outDir: z.string().optional().default("types"),
   outName: z.string().optional().default("api.d.ts"),

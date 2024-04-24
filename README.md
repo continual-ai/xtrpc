@@ -1,6 +1,6 @@
 # 𝕏tRPC
 
-![npm (scoped)](https://img.shields.io/npm/v/@algora/xtrpc)
+![npm (scoped)](https://img.shields.io/npm/v/@continual/xtrpc)
 
 A CLI tool that helps you cleanly e𝕏port your tRPC router to
 
@@ -24,13 +24,9 @@ With the help of a type assertion, your app stays fully typesafe while you enjoy
 
 Compare how long it takes to write the same tRPC query with the help of Intellisense before and after compiling your API with 𝕏tRPC:
 
-| Before (45s) | After (10s) |
-|---|---|
+| Before (45s)         | After (10s)         |
+| -------------------- | ------------------- |
 | ![](demo/before.gif) | ![](demo/after.gif) |
-
-## Typed SDK
-
-See [algora-io/sdk](https://github.com/algora-io/sdk) as an example of how we published our own API
 
 # Table of Contents
 
@@ -41,34 +37,36 @@ See [algora-io/sdk](https://github.com/algora-io/sdk) as an example of how we pu
 - [Table of Contents](#table-of-contents)
 - [Quickstart](#quickstart)
   - [Setup](#setup)
-      - [Install the package](#install-the-package)
-      - [Generate your API](#generate-your-api)
-      - [Include your `types` in `tsconfig.json`](#include-your-types-in-tsconfigjson)
-      - [Export your API \& inference helpers](#export-your-api--inference-helpers)
-      - [(Recommended) Add a type assertion to maintain type safety](#recommended-add-a-type-assertion-to-maintain-type-safety)
-      - [Use `API` instead of `AppRouter` in your tRPC client](#use-api-instead-of-approuter-in-your-trpc-client)
+    - [Install the package](#install-the-package)
+    - [Generate your API](#generate-your-api)
+    - [Include your `types` in `tsconfig.json`](#include-your-types-in-tsconfigjson)
+    - [Export your API \& inference helpers](#export-your-api--inference-helpers)
+    - [(Recommended) Add a type assertion to maintain type safety](#recommended-add-a-type-assertion-to-maintain-type-safety)
+    - [Use `API` instead of `AppRouter` in your tRPC client](#use-api-instead-of-approuter-in-your-trpc-client)
   - [Usage](#usage)
 - [Configuration](#configuration)
 - [Caveats](#caveats)
-
-
 
 # Quickstart
 
 ## Setup
 
 #### Install the package
+
 Navigate to the project containing your tRPC router and run
+
 ```bash
-pnpm add -D @algora/xtrpc
+pnpm add -D @continual/xtrpc
 ```
 
 #### Generate your API
+
 ```bash
 pnpm xtrpc
 ```
 
 #### Include your `types` in `tsconfig.json`
+
 ```json
 {
   "include": ["index.ts", "src", "types"]
@@ -76,6 +74,7 @@ pnpm xtrpc
 ```
 
 #### Export your API & inference helpers
+
 ```ts
 export { type API } from "./types/api";
 export type RouterInputs = inferRouterInputs<API>;
@@ -83,12 +82,14 @@ export type RouterOutputs = inferRouterOutputs<API>;
 ```
 
 #### (Recommended) Add a type assertion to maintain type safety
+
 ```ts
 type Expect<T extends true> = T;
 type _Assertion = Expect<AppRouter extends API ? true : false>;
 ```
 
 #### Use `API` instead of `AppRouter` in your tRPC client
+
 ```ts
 export const trpc = createTRPCNext<API>({...})
 ```
@@ -96,6 +97,7 @@ export const trpc = createTRPCNext<API>({...})
 ## Usage
 
 Once you've set up your client to use the API, just rerun the tool to regenerate it whenever your [type assertion](#recommended-add-a-type-assertion-to-maintain-type-safety) fails
+
 ```bash
 pnpm xtrpc
 ```
@@ -109,18 +111,21 @@ Add a `xtrpc.config.json` file in your project to configure 𝕏tRPC. Below is t
   // path to the project that contains your tRPC definitions
   "srcProject": ".",
 
+  // restrict the source files to only the ones relevant to your tRPC definitions
+  "srcFolders": ["/trpc"],
+
   // path to the project that your API will be exported to
   "dstProject": ".",
-  
+
   // name of the directory your API will be exported to
   "outDir": "types",
-  
+
   // name of the file your API will be exported to
   "outName": "api.d.ts",
-  
+
   // whether your API should be overwritten if it already exists
   "overwrite": false,
-  
+
   // an optional Record<string, string[]> if you'd like to prune your router before exporting
   // keys are subrouters (i.e. the exported name of your subrouter)
   // values are procedures (i.e. the keys of your subrouter)
